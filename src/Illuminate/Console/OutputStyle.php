@@ -9,7 +9,7 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class OutputStyle extends SymfonyStyle implements NewLineAware
-{
+{   
     /**
      * The output instance.
      *
@@ -86,6 +86,35 @@ class OutputStyle extends SymfonyStyle implements NewLineAware
         }
 
         parent::writeln($messages, $type);
+    }
+
+    /**
+     * Write a string as standard output.
+     *
+     * @param  string  $string
+     * @param  string|null  $style
+     * @param  int|string|null  $verbosity
+     * @return void
+     */
+    public function line($string, $style = null, $verbosity = null)
+    {
+        $styled = $style ? "<$style>$string</$style>" : $string;
+
+        $verbosityMap = [
+            'v' => OutputInterface::VERBOSITY_VERBOSE,
+            'vv' => OutputInterface::VERBOSITY_VERY_VERBOSE,
+            'vvv' => OutputInterface::VERBOSITY_DEBUG,
+            'quiet' => OutputInterface::VERBOSITY_QUIET,
+            'normal' => OutputInterface::VERBOSITY_NORMAL,
+        ];
+        
+        if (isset($verbosityMap[$verbosity])) {
+            $verbosity = $verbosityMap[$verbosity];
+        } elseif (! is_int($verbosity)) {
+            $verbosity = OutputInterface::VERBOSITY_NORMAL;
+        }
+
+        $this->writeln($styled, $verbosity);
     }
 
     /**
